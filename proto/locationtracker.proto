@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+option go_package = ".;locationtracker";
+option java_package = "org.potpie.tracker";
+
+package pb.potpie.locationtracker;
+
+service LocationTracker {
+    rpc Register(RegisterRequest) returns (RegisterResponse) {}
+    rpc GetTrackables(GetTrackablesRequest) returns (GetTrackablesResponse) {}
+    rpc StartSession(StartSessionRequest) returns (StartSessionResponse) {}
+    rpc StopSession(StopSessionRequest) returns (StopSessionResponse) {}
+    rpc StartTracking (StartTrackingRequest) returns (stream TrackingData) {}
+    rpc StopTracking (StopTrackingRequest) returns (StopTrackingResponse) {}
+    rpc ReportLocation(stream TrackingData) returns (ReportLocationResponse) {}
+    rpc GetSessionIds(SessionIdsRequest) returns (SessionIdsResponse) {}
+    rpc GetSessionData(SessionDataRequest) returns (SessionDataResponse) {}
+}
+
+message StartTrackingRequest {
+    string trackeeName = 1;
+    string userName = 2;
+}
+
+message StopTrackingRequest {
+    string trackeeName = 1;
+    string userName = 2;
+}
+
+message StopTrackingResponse {}
+
+message TrackingData {
+    string trackeeName = 1;
+    double longitude = 2;
+    double latitude = 3;
+    int64 timestamp = 4;
+}
+
+message ReportLocationResponse {}
+
+message RegisterRequest {
+    string userName = 1;
+    bool trackable = 2;
+}
+
+message RegisterResponse {
+    int64 userId = 1;
+}
+
+message StartSessionRequest {
+    string userName = 1;
+}
+
+message StartSessionResponse {}
+
+message StopSessionRequest {
+    string userName = 1;
+}
+
+message StopSessionResponse {}
+
+message GetTrackablesRequest {}
+
+message GetTrackablesResponse{
+    repeated string userName = 1;
+}
+
+message SessionIdsRequest {
+    string userName = 1;
+}
+
+message SessionId {
+    int64 sessionId = 1;
+    int64 timestamp = 2;
+}
+
+message SessionIdsResponse {
+    repeated SessionId sessionId = 1;
+}
+
+message SessionDataRequest {
+    int64 sessionId = 1;
+}
+
+message SessionDataResponse {
+    repeated TrackingData trackingData = 1;
+}

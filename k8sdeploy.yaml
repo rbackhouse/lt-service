@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  ports:
+  - name: redis
+    port: 6379
+  selector:
+    app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - image: redis:alpine
+        imagePullPolicy: Always
+        name: redis
+        ports:
+        - name: redis
+          containerPort: 6379
+      restartPolicy: Always
+      serviceAccountName: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: locationtracker
+  labels:
+    app: locationtracker
+spec:
+  ports:
+  - name: "8082"
+    port: 8082
+    targetPort: 8082
+    protocol: TCP
+  type: LoadBalancer
+  selector:
+    app: locationtracker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locationtracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locationtracker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: locationtracker
+    spec:
+      containers:
+      - image: potpie/locationtracker:v1
+        imagePullPolicy: IfNotPresent
+        name: locationtracker
+        command: ["/bin/locationtracker"]
+        env:
+        - name: LOG_LEVEL
+          value: info
+        - name: REDIS_URL
+          value: redis:6379
+        ports:
+        - containerPort: 8082
+        volumeMounts:
+        - name: locationtracker-config
+          mountPath: /data
+      volumes:
+      - name: locationtracker-config
+        emptyDir: {}
+
+---
