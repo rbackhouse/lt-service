@@ -1,10 +1,12 @@
 package server
 
 import (
+	"net/http"
+
 	"google.golang.org/grpc"
 )
 
 type Server interface {
-	Start()
+	Start(handler http.HandlerFunc)
 	GrpcServer() *grpc.Server
 }

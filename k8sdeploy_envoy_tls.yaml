@@ -49,6 +49,10 @@ spec:
     port: 8082
     targetPort: 8082
     protocol: TCP
+  - name: "8081"
+    port: 8081
+    targetPort: 8081
+    protocol: TCP
   selector:
     app: locationtracker
 ---
@@ -80,6 +84,7 @@ spec:
           value: redis:6379
         ports:
         - containerPort: 8082
+        - containerPort: 8081
         volumeMounts:
         - name: locationtracker-config
           mountPath: /data
@@ -98,9 +103,13 @@ spec:
   selector:
     app: frontenvoy
   ports:
-  - name: https
+  - name: grpchttps
     port: 9443
     targetPort: 9443
+    protocol: TCP
+  - name: wshttps
+    port: 9444
+    targetPort: 9444
     protocol: TCP
   type: LoadBalancer
 ---
@@ -129,4 +138,5 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9443
+        - containerPort: 9444
 ---

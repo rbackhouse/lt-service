@@ -11,6 +11,7 @@ type Settings struct {
 	// env config
 	GrpcPort int    `envconfig:"GRPC_PORT" default:"8082"`
 	RedisUrl string `envconfig:"REDIS_URL" default:"localhost:6379"`
+	WSPort   int    `envconfig:"WS_PORT" default:"8081"`
 }
 
 type Option func(*Settings)

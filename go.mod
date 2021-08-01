@@ -3,6 +3,7 @@ module potpie.org/locationtracker
 go 1.15
 
 require (
+	github.com/gobwas/ws v1.1.0
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo v1.8.4
 	github.com/google/go-cmp v0.5.5 // indirect

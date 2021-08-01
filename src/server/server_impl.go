@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,9 +18,12 @@ import (
 type server struct {
 	grpcPort   int
 	grpcServer *grpc.Server
+	wsPort     int
 }
 
-func (server *server) Start() {
+func (server *server) Start(handler http.HandlerFunc) {
+	go server.startWS(handler)
+
 	server.handleGracefulShutdown()
 
 	addr := fmt.Sprintf(":%d", server.grpcPort)
@@ -41,8 +45,20 @@ func NewServer(opts ...settings.Option) Server {
 	ret.grpcServer = grpc.NewServer(s.GrpcUnaryInterceptor)
 
 	ret.grpcPort = s.GrpcPort
+	ret.wsPort = s.WSPort
 
 	return ret
+}
+
+func (server *server) startWS(handler http.HandlerFunc) {
+	addr := fmt.Sprintf(":%d", server.wsPort)
+	logger.Infof("Listening for WebSockets on '%s'", addr)
+	lis, err := reuseport.Listen("tcp", addr)
+	if err != nil {
+		logger.Fatalf("Failed to listen for WebSockets: %v", err)
+	}
+
+	http.Serve(lis, handler)
 }
 
 func (server *server) handleGracefulShutdown() {
