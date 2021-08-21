@@ -68,7 +68,7 @@ func (this *service) StartTracking(in *pb.StartTrackingRequest, stream pb.Locati
 		}
 		logger.Infof("Location: %+v", td)
 
-		if err := stream.Send(&pb.TrackingData{Longitude: td.Longitude, Latitude: td.Latitude, Timestamp: td.Timestamp}); err != nil {
+		if err := stream.Send(&pb.TrackingData{TrackeeName: in.GetTrackeeName(), Longitude: td.Longitude, Latitude: td.Latitude, Timestamp: td.Timestamp}); err != nil {
 			return err
 		}
 		return nil

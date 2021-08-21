@@ -41,6 +41,7 @@ type TrackingRequest struct {
 
 type TrackingResponse struct {
 	Type         ResponseType
+	TrackeeName  string
 	TrackingData db.TrackingData
 }
 
@@ -99,7 +100,7 @@ func (this *service) StartTracking(trackeeName string, userName string, conn net
 			return err
 		}
 		logger.Infof("Location: %+v", td)
-		response := TrackingResponse{Type: TRACKING_DATA, TrackingData: td}
+		response := TrackingResponse{Type: TRACKING_DATA, TrackeeName: trackeeName, TrackingData: td}
 		msg, err := json.Marshal(response)
 		if err != nil {
 			return err
